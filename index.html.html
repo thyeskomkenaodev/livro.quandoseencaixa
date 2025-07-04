@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quando Tudo 🧩 Se Encaixa</title>
+    <style>
+        :root {
+            --yellow: #FFF176;
+            --blue-light: #81D4FA;
+            --red: #FF5252;
+            --orange: #FFB74D;
+            --purple: #6200ea;
+            --green-light: #e8f5e9;
+            --gray-light: #f4f4f9;
+            --blue-dark: #1976d2;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+        header {
+            background: linear-gradient(90deg, #FFF176 0%, #FFB74D 50%, #81D4FA 100%);
+            color: #333;
+            padding: 60px 0 80px 0; /* aumentou o padding */
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #puzzle-pieces-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
+        }
+        .puzzle-piece {
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+            animation: float 6s infinite ease-in-out;
+            z-index: 2;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg);}
+            50% { transform: translateY(-20px) rotate(5deg);}
+        }
+        .logo {
+            position: relative;
+            z-index: 10;
+        }
+        .logo h1 {
+            margin: 0;
+            margin-bottom: 24px; /* mais espaço abaixo do título */
+            font-size: 2.8em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+        .logo h1 span {
+            font-size: 1.2em;
+        }
+        .logo p {
+            font-size: 1.3em;
+            margin: 20px 0 35px; /* mais espaço acima e abaixo */
+        }
+        .btn-preorder {
+            background: linear-gradient(90deg, #FF9800, #FF5252);
+            color: #fff;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 18px; /* espaço extra acima do botão */
+        }
+        .btn-preorder:hover {
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        }
+        .btn-buy-section {
+            margin-top: 20px; /* Espaço acima do botão */
+        }
+        .book-section {
+            padding: 80px 0 60px 0; /* aumentou o padding */
+        }
+        .book-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 48px; /* espaço entre capa e info */
+            margin-bottom: 32px;
+        }
+        .book-cover {
+            width: 300px;
+            height: 420px;
+            background: var(--yellow);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 32px;
+            overflow: hidden;
+            transition: transform 1s;
+            position: relative;
+        }
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        .book-cover:hover {
+            transform: rotateY(20deg);
+        }
+        .book-info {
+            flex: 1;
+            padding: 0 60px;
+            max-width: 600px;
+        }
+        .book-info h2 {
+            font-size: 2em;
+            margin-bottom: 24px;
+        }
+        .book-info p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 0 0 20px;
+        }
+        .book-images {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .secondary-cover {
+            width: 220px;
+            height: 308px;
+            margin-top: 50px;
+            transform: rotate(4deg);
+            transition: transform 0.3s ease-in-out;
+        }
+        .puzzle-section {
+            background: #fff;
+            padding: 80px 0 80px 0; /* aumentou o padding */
+        }
+        .puzzle-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 56px 32px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            margin-bottom: 32px;
+        }
+        .puzzle-board {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 32px; /* espaço entre slots */
+        }
+        .puzzle-slot {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            margin: 0 20px;
+            border: 3px dashed #bbb;
+            background-color: #eee;
+            transition: background 0.3s;
+        }
+        .puzzle-slot[data-correct="1"] { background-color: var(--yellow); }
+        .puzzle-slot[data-correct="2"] { background-color: var(--blue-light); }
+        .puzzle-slot[data-correct="3"] { background-color: var(--red); }
+        .puzzle-piece-draggable {
+            width: 90px;
+            height: 90px;
+            border-radius: 10px;
+            margin: 0 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        .puzzle-piece-draggable[data-piece="1"] { background: var(--yellow); color: #333; }
+        .puzzle-piece-draggable[data-piece="2"] { background: var(--blue-light); color: #333; }
+        .puzzle-piece-draggable[data-piece="3"] { background: var(--red); color: #fff; }
+        .puzzle-piece-draggable:hover {
+            transform: scale(1.08);
+        }
+        #puzzle-success {
+            display: none;
+            margin-top: 48px;
+            background-color: var(--green-light);
+            padding: 32px;
+            border-radius: 8px;
+            font-size: 1.1em;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 40px;
+            background: linear-gradient(90deg, #1976d2 0%, #6200ea 100%);
+            color: #fff;
+        }
+        .author-section {
+            background: var(--gray-light);
+            padding: 70px 0 70px 0;
+        }
+        .author-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 48px;
+            flex-wrap: wrap;
+        }
+        .author-photo img {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+            border: 6px solid #fff;
+            background: #eee;
+        }
+        .author-info {
+            flex: 1;
+            min-width: 260px;
+        }
+        .author-info h2 {
+            font-size: 2em;
+            margin-bottom: 18px;
+        }
+        .author-info p {
+            font-size: 1.1em;
+            margin-bottom: 28px;
+        }
+        .semaforo-experiencia {
+            margin-top: 12px;
+        }
+        .semaforo-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .semaforo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .semaforo-luz {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 3px solid #ccc;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            transition: box-shadow 0.2s;
+        }
+        .luz-verde { background: #43ea5e; border-color: #2ecc40; }
+        .luz-amarela { background: #ffe066; border-color: #ffd700; }
+        .luz-vermelha { background: #ff5252; border-color: #e53935; }
+        .semaforo-luz:hover {
+            box-shadow: 0 0 0 6px rgba(67,234,94,0.15), 0 2px 8px rgba(0,0,0,0.10);
+            cursor: pointer;
+        }
+        .semaforo-descricao {
+            display: flex;
+            gap: 24px;
+            font-size: 0.98em;
+            color: #555;
+            flex-wrap: wrap;
+        }
+        .author-socials {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+        .social-icon {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+        @media (max-width: 900px) {
+            .book-container {
+                flex-direction: column;
+                gap: 32px;
+                padding: 0 10px;
+            }
+            .book-info {
+                padding: 32px 0 0 0;
+                max-width: 100%;
+            }
+            .author-container {
+                flex-direction: column;
+                gap: 32px;
+                padding: 0 10px;
+            }
+            .author-photo img {
+                margin-bottom: 18px;
+            }
+        }
+        @media (max-width: 600px) {
+            .book-section, .puzzle-section {
+                padding: 40px 0 40px 0;
+            }
+            .book-cover { width: 90vw; height: 55vw; min-width: 180px; min-height: 220px;}
+            .puzzle-container {
+                padding: 24px 8px;
+            }
+            .book-info {
+                padding: 16px 0 0 0;
+            }
+            .puzzle-board, #puzzle-pieces {
+                flex-direction: column;
+                align-items: center;
+                gap: 16px;
+            }
+            .puzzle-slot, .puzzle-piece-draggable { margin: 10px 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho Hero -->
+    <header>
+        <div id="puzzle-pieces-container"></div>
+        <div class="logo">
+            <h1></h1>
+            <p>Histórias de amor, aceitação e descobertas sobre o autismo</p>
+            <a href="https://wa.me/5567996220051?text=Quero%20saber%20mais%20sobre%20o%20livro" target="_blank" rel="noopener">
+                <button class="btn-preorder">PRÉ-VENDA DISPONÍVEL</button>
+            </a>
+        </div>
+    </header>
+    
+    <!-- Seção Sobre o Livro -->
+    <section class="book-section">
+        <div class="book-container">
+            <div class="book-images">
+                <div class="book-cover" id="interactive-book">
+                    <img src="imagemlivro.jpg" alt="Capa do Livro">
+                </div>
+                <div class="book-cover secondary-cover">
+                    <img src="fotonova.jpg" alt="Página interna do livro">
+                </div>
+            </div>
+            <div class="book-info">
+                <h2>Sobre o Livro</h2>
+                <p>Uma jornada emocionante que explora as nuances do autismo através de histórias reais, cheias de amor, desafios e descobertas.</p>
+                <p>Cada capítulo é como uma peça de quebra-cabeça que, quando encaixada, revela uma imagem maior de compreensão e aceitação.</p>
+                <a href="https://wa.me/5567996220051?text=Quero%20adquirir%20o%20livro" target="_blank" rel="noopener">
+                    <button class="btn-preorder btn-buy-section">ADQUIRA O SEU</button>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Seção Puzzle Interativo -->
+    <section class="puzzle-section">
+        <div class="puzzle-container">
+            <h2>Complete o Puzzle para Liberar um Presente</h2>
+            <p>Arraste as peças para os lugares corretos e descubra uma surpresa especial!</p>
+            <div class="puzzle-board" id="puzzle-board">
+                <div class="puzzle-slot" data-correct="1"></div>
+                <div class="puzzle-slot" data-correct="2"></div>
+                <div class="puzzle-slot" data-correct="3"></div>
+            </div>
+            <div id="puzzle-pieces" style="display:flex; justify-content:center;">
+                <div class="puzzle-piece-draggable" draggable="true" data-piece="1">1</div>
+                <div class="puzzle-piece-draggable" draggable="true" data-piece="2">2</div>
+                <div class="puzzle-piece-draggable" draggable="true" data-piece="3">3</div>
+            </div>
+            <div id="puzzle-success">
+                <h3>Parabéns! Você completou o puzzle!</h3>
+                <p>Como recompensa, aqui está um trecho exclusivo do livro:</p>
+                <blockquote>"No momento em que entendi que o autismo não era um quebra-cabeça a ser resolvido, mas sim uma nova maneira de ver as peças, tudo começou a fazer sentido."</blockquote>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Seção Sobre o Autor -->
+    <section class="author-section">
+        <div class="author-container">
+            <div class="author-photo">
+                <img src="autor.jpg" alt="Foto do Autor" />
+            </div>
+            <div class="author-info">
+                <h2>Sobre o Autor</h2>
+                <p>
+                    José Henrrique Almeida é especialista em educação inclusiva, com experiência ajudando famílias e profissionais a compreenderem o autismo de forma acolhedora e inovadora.
+                </p>
+                <div class="semaforo-experiencia">
+                    <div class="semaforo-label">Experiência do Autor:</div>
+                    <div class="semaforo">
+                        <div class="semaforo-luz luz-verde" title="Alta experiência"></div>
+                        <div class="semaforo-luz luz-amarela" title="Experiência intermediária"></div>
+                        <div class="semaforo-luz luz-vermelha" title="Em constante aprendizado"></div>
+                    </div>
+                    <div class="semaforo-descricao">
+                        <span><strong>Verde:</strong> Educação Inclusiva</span>
+                        <span><strong>Amarelo:</strong> Psicopedagogia</span>
+                        <span><strong>Vermelho:</strong> Novas abordagens</span>
+                    </div>
+                </div>
+                <!-- Ícones Sociais -->
+                <div class="author-socials">
+                    <a href="https://www.instagram.com/jose_henrique_desenvolvimento?igsh=aDJsdjQ0cGljcm8z" target="_blank" aria-label="Instagram" class="social-icon">
+                        <!-- Instagram SVG -->
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                            <rect width="32" height="32" rx="8" fill="#E1306C"/>
+                            <path d="M16 11.2A4.8 4.8 0 1 0 16 20.8A4.8 4.8 0 1 0 16 11.2Z" fill="#fff"/>
+                            <circle cx="23" cy="9" r="1.2" fill="#fff"/>
+                            <rect x="8" y="8" width="16" height="16" rx="6" stroke="#fff" stroke-width="2"/>
+                        </svg>
+                    </a>
+                    <a href="https://wa.me/5567996220051" target="_blank" aria-label="WhatsApp" class="social-icon">
+                        <!-- WhatsApp SVG -->
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                            <rect width="32" height="32" rx="8" fill="#25D366"/>
+                            <path d="M16 8a8 8 0 0 0-6.93 12.07L8 24l3.93-1.07A8 8 0 1 0 16 8zm0 14.4a6.4 6.4 0 1 1 0-12.8 6.4 6.4 0 0 1 0 12.8zm3.13-4.27c-.17-.09-1-.5-1.15-.56-.15-.06-.26-.09-.37.09-.11.17-.43.56-.53.67-.09.11-.2.13-.37.04-.17-.09-.72-.27-1.37-.85-.51-.45-.85-1-.95-1.17-.09-.17-.01-.26.07-.34.07-.07.17-.2.26-.3.09-.11.12-.19.18-.32.06-.13.03-.24-.01-.33-.04-.09-.37-.89-.5-1.22-.13-.32-.27-.28-.37-.29-.09-.01-.2-.01-.32-.01-.11 0-.29.04-.44.19-.15.15-.58.57-.58 1.39 0 .82.59 1.61.67 1.72.09.11 1.16 1.77 2.82 2.42.4.17.71.27.95.34.4.13.77.11 1.06.07.32-.05 1-.41 1.14-.8.14-.39.14-.73.1-.8-.04-.07-.15-.11-.32-.2z" fill="#fff"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.facebook.com/share/1BqtBPDkNj/" target="_blank" aria-label="Facebook" class="social-icon">
+                        <!-- Facebook SVG -->
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                            <rect width="32" height="32" rx="8" fill="#1877F3"/>
+                            <path d="M20.5 16H18V24H15V16H13.5V13.5H15V12.25C15 10.73 15.73 9.5 17.75 9.5H20.5V12H19C18.45 12 18 12.45 18 13V13.5H20.5V16Z" fill="#fff"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Rodapé -->
+    <footer>
+        <p>&copy; 2025 Thyesko menão. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Balões flutuantes animados no header
+        function createFloatingPieces() {
+            const container = document.getElementById('puzzle-pieces-container');
+            const colors = ['#FFF176', '#81D4FA', '#FF5252', '#FFB74D'];
+            for (let i = 0; i < 15; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'puzzle-piece';
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const rotation = Math.random() * 360;
+                const size = 30 + Math.random() * 60;
+                const delay = Math.random() * 5;
+                const duration = 3 + Math.random() * 4;
+                const color = colors[i % colors.length];
+                piece.style.left = `${left}%`;
+                piece.style.top = `${top}%`;
+                piece.style.transform = `rotate(${rotation}deg)`;
+                piece.style.width = `${size}px`;
+                piece.style.height = `${size}px`;
+                piece.style.backgroundColor = color;
+                piece.style.animationDelay = `${delay}s`;
+                piece.style.animationDuration = `${duration}s`;
+                container.appendChild(piece);
+            }
+        }
+        // Animação do livro 3D
+        function setupBookAnimation() {
+            const book = document.getElementById('interactive-book');
+            book.addEventListener('mousemove', (e) => {
+                const x = e.clientX - book.getBoundingClientRect().left;
+                const y = e.clientY - book.getBoundingClientRect().top;
+                const centerX = book.offsetWidth / 2;
+                const centerY = book.offsetHeight / 2;
+                const angleY = (x - centerX) / 20;
+                const angleX = (centerY - y) / 20;
+                book.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+            });
+            book.addEventListener('mouseleave', () => {
+                book.style.transform = 'rotateX(0) rotateY(0)';
+            });
+        }
+        // Puzzle interativo
+        function setupPuzzle() {
+            const puzzlePieces = document.querySelectorAll('.puzzle-piece-draggable');
+            const puzzleSlots = document.querySelectorAll('.puzzle-slot');
+            const puzzleSuccess = document.getElementById('puzzle-success');
+            let draggedPiece = null;
+            let completedPieces = 0;
+            puzzlePieces.forEach(piece => {
+                piece.addEventListener('dragstart', () => {
+                    draggedPiece = piece;
+                    setTimeout(() => {
+                        piece.style.visibility = 'hidden';
+                    }, 0);
+                });
+                piece.addEventListener('dragend', () => {
+                    setTimeout(() => {
+                        draggedPiece = null;
+                        piece.style.visibility = 'visible';
+                    }, 0);
+                });
+            });
+            puzzleSlots.forEach(slot => {
+                slot.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                slot.addEventListener('drop', () => {
+                    if (draggedPiece && slot.getAttribute('data-correct') === draggedPiece.getAttribute('data-piece') && !slot.hasChildNodes()) {
+                        slot.appendChild(draggedPiece);
+                        draggedPiece.style.visibility = 'visible';
+                        completedPieces++;
+                        if (completedPieces === 3) {
+                            setTimeout(() => {
+                                puzzleSuccess.style.display = 'block';
+                                createConfetti();
+                            }, 500);
+                        }
+                    }
+                });
+            });
+        }
+        // Efeito de confete
+        function createConfetti() {
+            const colors = ['#FFF176', '#81D4FA', '#FF5252', '#FFB74D'];
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = '50%';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = '-10px';
+                confetti.style.zIndex = '1000';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(confetti);
+                const animation = confetti.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100vh', opacity: 0 }
+                ], {
+                    duration: 2000 + Math.random() * 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
+                });
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+        }
+        // Efeito de digitação no título
+        function typingEffectTitle() {
+            const title = document.querySelector('.logo h1');
+            const originalText = 'Quando Tudo 🧩 Se Encaixa';
+            title.innerHTML = '';
+            let i = 0;
+            function typeLetter() {
+                if (i < originalText.length) {
+                    const span = document.createElement('span');
+                    span.textContent = originalText.charAt(i);
+                    span.style.opacity = '0';
+                    span.style.transition = 'opacity 0.3s';
+                    title.appendChild(span);
+                    setTimeout(() => {
+                        span.style.opacity = '1';
+                    }, 10);
+                    i++;
+                    setTimeout(typeLetter, 80);
+                }
+            }
+            typeLetter();
+        }
+        // Interatividade do semáforo de experiência do autor
+        function setupSemaforo() {
+            const lights = document.querySelectorAll('.semaforo-luz');
+            const descBox = document.createElement('div');
+            descBox.className = 'semaforo-desc-box';
+            descBox.style.marginTop = '12px';
+            descBox.style.fontSize = '1.05em';
+            descBox.style.color = '#333';
+            descBox.style.background = '#fffbe7';
+            descBox.style.borderRadius = '8px';
+            descBox.style.padding = '16px 20px';
+            descBox.style.boxShadow = '0 2px 12px rgba(0,0,0,0.07)';
+            descBox.style.display = 'none';
+
+            const descriptions = [
+                '<strong>Educação Inclusiva:</strong> JOSE HENRRIQUE ALMEIDA possui ampla atuação em escolas e projetos sociais, promovendo inclusão real e transformadora.',
+                '<strong>Psicopedagogia:</strong> Experiência intermediária em práticas psicopedagógicas, sempre buscando atualização e novas metodologias.',
+                '<strong>Novas abordagens:</strong> Em constante aprendizado, aberto a novas pesquisas e práticas inovadoras no campo do autismo.'
+            ];
+
+            let active = null;
+
+            lights.forEach((light, idx) => {
+                light.style.cursor = 'pointer';
+                light.addEventListener('click', () => {
+                    if (active === idx) {
+                        // Desativa se clicar de novo
+                        light.classList.remove('semaforo-luz-ativa');
+                        descBox.style.display = 'none';
+                        active = null;
+                    } else {
+                        // Remove destaque de todas
+                        lights.forEach(l => l.classList.remove('semaforo-luz-ativa'));
+                        // Destaca a clicada
+                        light.classList.add('semaforo-luz-ativa');
+                        descBox.innerHTML = descriptions[idx];
+                        descBox.style.display = 'block';
+                        active = idx;
+                    }
+                });
+            });
+
+            // Adiciona o box de descrição logo após o .semaforo
+            const semaforo = document.querySelector('.semaforo-experiencia .semaforo');
+            if (semaforo && semaforo.parentNode) {
+                semaforo.parentNode.insertBefore(descBox, semaforo.nextSibling);
+            }
+        }
+
+        // CSS extra para destaque da luz ativa
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .semaforo-luz-ativa {
+                box-shadow: 0 0 0 8px rgba(67,234,94,0.25), 0 2px 12px rgba(0,0,0,0.13);
+                border-width: 4px;
+                outline: 2px solid #3332;
+                z-index: 2;
+                position: relative;
+            }
+            @media (max-width: 600px) {
+                .semaforo-desc-box { font-size: 0.98em; padding: 12px 8px; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            createFloatingPieces();
+            setupBookAnimation();
+            setupPuzzle();
+            typingEffectTitle();
+            setupSemaforo();
+        });
+    </script>
+</body>
+</html>

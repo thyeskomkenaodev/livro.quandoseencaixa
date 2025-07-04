@@ -1,0 +1,18 @@
+/capoeira-site
+│
+├── index.html          (Página principal)
+├── videos.html         (Página de vídeos)
+│
+├── /css
+│   ├── style.css       (Estilos principais)
+│   └── videos.css      (Estilos específicos para vídeos)
+│
+├── /js
+│   ├── main.js         (JavaScript principal)
+│   └── videos.js       (JavaScript para vídeos)
+│
+└── /img
+    ├── logo.png
+    ├── hero-bg.jpg
+    ├── video-bg.jpg
+    └── /gallery        (Todas as imagens da galeria)

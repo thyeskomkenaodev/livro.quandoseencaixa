@@ -1,0 +1,24 @@
+:root {
+    --primary: #2E5EAA;
+    --secondary: #F9C80E;
+    --accent: #E15554;
+    --dark: #1A1A2E;
+    --light: #F8F9FA;
+    --text: #333333;
+    --text-light: #6C757D;
+    --white: #FFFFFF;
+    --transition: all 0.3s ease;
+}
+
+/* [TODOS OS ESTILOS DO SITE PRINCIPAL] */
+
+/* Exemplo de seção */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: var(--primary);
+    z-index: 1000;
+}
+
+/* [RESTO DO CSS COMPLETO] */

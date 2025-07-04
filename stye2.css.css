@@ -1,0 +1,13 @@
+/* Estilos específicos para a página de vídeos */
+.video-hero {
+    background: linear-gradient(rgba(0,0,0,0.7), url('img/video-bg.jpg') center/cover;
+    height: 60vh;
+}
+
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+/* [ESTILOS COMPLETOS DA PÁGINA DE VÍDEOS] */
